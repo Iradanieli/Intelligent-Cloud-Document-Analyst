@@ -60,25 +60,20 @@ pip install fastapi uvicorn PyMuPDF python-docx
 uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-2. n8n Environment Setup
+**2. n8n Environment Setup**
 
-Ensure n8n is running (via Docker or desktop app).
+* Ensure n8n is running (via Docker or desktop app).
+* Configure OAuth2 credentials for Google Drive, Google Sheets, and Gmail.
+* Configure the API key for Google Gemini (PaLM) API.
 
-Configure OAuth2 credentials for Google Drive, Google Sheets, and Gmail.
+**3. Import Workflows**
 
-Configure the API key for Google Gemini (PaLM) API.
+* Open n8n and click **Import from File**.
+* Import the Main Pipeline JSON and the Daily Report JSON.
+* Update the Google Drive Folder IDs and Google Sheet IDs to match your personal environment.
+* Toggle both workflows to Active.
 
-3. Import Workflows
+## 👨‍💻 Author
 
-Open n8n and click Import from File.
-
-Import the Main Pipeline JSON and the Daily Report JSON.
-
-Update the Google Drive Folder IDs and Google Sheet IDs to match your personal environment.
-
-Toggle both workflows to Active.
-
-👨‍💻 Author
 Irad Danieli
-
 
