@@ -1,0 +1,143 @@
+{
+  "name": "Business Document Daily Report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 14
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -384,
+        -32
+      ],
+      "id": "94dbcac8-c417-44d2-b0ba-8c24e0658b60",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "18ENbIPwfP6qBgt1lArUAa-8-aUR-Lxn4LMLchfvHF_g",
+          "mode": "list",
+          "cachedResultName": "Business Document Analyst sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18ENbIPwfP6qBgt1lArUAa-8-aUR-Lxn4LMLchfvHF_g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18ENbIPwfP6qBgt1lArUAa-8-aUR-Lxn4LMLchfvHF_g/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        -32
+      ],
+      "id": "e6d2d978-3485-4b06-add6-8bc90bc895ef",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PBc1p0o5VuR9PJjR",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get all rows from the Google Sheet\nconst allDocs = $input.all();\n\n// 2. Calculate the exact timestamp for 24 hours ago\nconst yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));\n\n// 3. Filter for only documents processed in the last 24 hours\nconst recentDocs = allDocs.filter(item => {\n  // Grab the date string from your sheet and turn it into a JS Date object\n  const docDate = new Date(item.json.processed_at); \n  return docDate >= yesterday;\n});\n\n// 4. Handle the case where no documents were processed\nif (recentDocs.length === 0) {\n  return [{ json: { emailBody: \"<p>No documents were processed in the last 24 hours.</p>\" } }];\n}\n\n// 5. Build a nice HTML summary table\nlet html = \"<h2>Daily Document Processing Summary</h2>\";\nhtml += \"<p>Here are the documents processed by the AI pipeline over the last 24 hours:</p>\";\nhtml += \"<table border='1' cellpadding='8' style='border-collapse: collapse; text-align: left;'>\";\nhtml += \"<tr style='background-color: #f2f2f2;'><th>File</th><th>Type</th><th>Dept</th><th>Sensitivity</th><th>Routing</th></tr>\";\n\nrecentDocs.forEach(item => {\n  const doc = item.json;\n  html += `<tr>\n    <td><b>${doc.filename || 'Unknown'}</b></td>\n    <td>${doc.classification || '-'}</td>\n    <td>${doc.department || '-'}</td>\n    <td>${doc.sensitivity || '-'}</td>\n    <td>${doc.routing_tag || '-'}</td>\n  </tr>`;\n});\n\nhtml += \"</table>\";\nhtml += `<br><p>Total documents processed: <b>${recentDocs.length}</b></p>`;\n\nreturn [{ json: { emailBody: html } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        -32
+      ],
+      "id": "98d61cc5-a830-4e09-9add-8ebe114f2a83",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "Irad.danieli@gmail.com",
+        "subject": "Daily AI Pipeline Summary",
+        "message": "={{ $json.emailBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        -32
+      ],
+      "id": "c8e08a18-64c2-4371-bb54-ffa0769cb237",
+      "name": "Send a message",
+      "webhookId": "cabb05ee-8c01-4eb8-b7e3-9a1f72e05f0c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RTxCILzPDOSP9GRj",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0dd30c6e-2e32-4f48-ac21-405110900dd4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5d5f6066c65cfe53b2d4457e60b4c84ae94b7465bd11f4caeeda809a8636ddf3"
+  },
+  "nodeGroups": [],
+  "id": "jMJZc9NwHPXL0IKB",
+  "tags": []
+}

@@ -69,11 +69,11 @@ uvicorn main:app --host 127.0.0.1 --port 8000
 **3. Import Workflows**
 
 * Open n8n and click **Import from File**.
-* Import the Main Pipeline JSON and the Daily Report JSON.
+* Import `Business Document Analyst-hw.json` for the main document-processing pipeline.
+* Import `Business Document Daily Report.json` for the daily summary workflow.
 * Update the Google Drive Folder IDs and Google Sheet IDs to match your personal environment.
 * Toggle both workflows to Active.
 
 ## 👨‍💻 Author
 
 Irad Danieli
-
