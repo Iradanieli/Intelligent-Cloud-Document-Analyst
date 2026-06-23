@@ -1,0 +1,33 @@
+# Python virtual environments
+venv/
+.venv/
+env/
+
+# Python cache and build files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# Local environment and secrets
+.env
+.env.*
+*.key
+*.pem
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local/generated project outputs
+incoming_docs/
+output_docs/
+*.log
