@@ -1,0 +1,903 @@
+{
+  "name": "Business Document Analyst-hw",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "fileName": "={{ $json.name }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        192,
+        -16
+      ],
+      "id": "37310ca3-f55c-497d-ab2c-d95d556f3810",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "wvWEiPA7SWfiLQec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/enrich",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1456,
+        -32
+      ],
+      "id": "79e72cd4-a190-4b03-ba3c-6107f0e6b1c0",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "18ENbIPwfP6qBgt1lArUAa-8-aUR-Lxn4LMLchfvHF_g",
+          "mode": "list",
+          "cachedResultName": "Business Document Analyst sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18ENbIPwfP6qBgt1lArUAa-8-aUR-Lxn4LMLchfvHF_g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18ENbIPwfP6qBgt1lArUAa-8-aUR-Lxn4LMLchfvHF_g/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "document_id": "={{ $json.document_id }}",
+            "filename": "={{ $('Download file').item.json.name }}",
+            "processed_at": "={{ $json.processed_at }}",
+            "classification": "={{ $('Code in JavaScript').item.json.classification }}",
+            "department": "={{ $json.department }}",
+            "sentiment": "={{ $('Code in JavaScript').item.json.sentiment }}",
+            "confidence_score": "={{ $json.adjusted_confidence_score }}",
+            "summary": "={{ $('Code in JavaScript').item.json.summary }}",
+            "routing_tag": "={{ $json.routing_tag }}",
+            "sensitivity": "={{ $json.sensitivity }}",
+            "action_items": "={{ $('Code in JavaScript').item.json.action_items[0] }}",
+            "file_type": "={{ $('Download file').item.json.fileExtension }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "document_id",
+              "displayName": "document_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "filename",
+              "displayName": "filename",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "file_type",
+              "displayName": "file_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processed_at",
+              "displayName": "processed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "classification",
+              "displayName": "classification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "department",
+              "displayName": "department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confidence_score",
+              "displayName": "confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "routing_tag",
+              "displayName": "routing_tag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sensitivity",
+              "displayName": "sensitivity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "action_items",
+              "displayName": "action_items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1856,
+        32
+      ],
+      "id": "d319339d-fa7a-4f6b-b2b6-4e2adc6ca8eb",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PBc1p0o5VuR9PJjR",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst rawString = item.text || item.output || item.response;\n\nconst cleaned = rawString\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/```$/i, '')\n  .trim();\n\nconst parsedData = JSON.parse(cleaned);\n\nreturn [{ json: parsedData }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        -32
+      ],
+      "id": "1aa09fd6-caaa-4a71-a625-bef21f56fa6f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "Irad.danieli@gmail.com",
+        "subject": "=={{ '[' + $('Code in JavaScript').item.json.classification.toUpperCase() + '] New document processed: ' + $('Download file').item.json.name }}",
+        "message": "==<h2>Document Processed</h2>\n<p><b>File:</b> {{ $('Download file').item.json.name }}</p>\n<p><b>Classification:</b> {{ $('Code in JavaScript').item.json.classification }}</p>\n<p><b>Sentiment:</b> {{ $('Code in JavaScript').item.json.sentiment }}</p>\n<p><b>Department:</b> {{ $json.department }}</p>\n<p><b>Sensitivity:</b> {{ $json.sensitivity }}</p>\n<p><b>Routing tag:</b> {{ $json.routing_tag }}</p>\n\n<h3>Summary</h3>\n<p>{{ $('Code in JavaScript').item.json.summary }}</p>\n\n<h3>Action items</h3>\n<p>{{ ($('Code in JavaScript').item.json.action_items || []).join(', ') }}</p>\n<hr>\n<p><i>Sent automatically by n8n + Gemini 3 Document Analyst</i></p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1856,
+        -160
+      ],
+      "id": "9d6bf4a6-180d-4c16-8c7a-fd636f506a2a",
+      "name": "Send a message",
+      "webhookId": "a1307c14-0541-44a8-a30d-e14a3bd4b3e3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RTxCILzPDOSP9GRj",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/extract",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        608,
+        32
+      ],
+      "id": "535d73e3-fbb4-4299-b536-d98d7761891f",
+      "name": "HTTP Request1",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "17UsCGTONcnOmj1NzmxS07MTf5CKKMseD",
+          "mode": "list",
+          "cachedResultName": "incoming_docs",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/17UsCGTONcnOmj1NzmxS07MTf5CKKMseD"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -16
+      ],
+      "id": "77925d32-b869-4bed-a9bc-f8472cc4fa06",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "wvWEiPA7SWfiLQec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $binary.data.fileExtension.toLowerCase() }}",
+                    "rightValue": "txt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a9ad06b7-cab0-47dc-ac8d-c095ef22e71d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "txt"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "00311cec-ab0b-463c-a3e1-d29d6852b94d",
+                    "leftValue": "={{ $binary.data.fileExtension.toLowerCase() }}",
+                    "rightValue": "docx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "docx"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "44f074a5-fae5-445d-bbef-79ba8d166410",
+                    "leftValue": "={{ $binary.data.fileExtension.toLowerCase() }}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pdf"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        -32
+      ],
+      "id": "685db4db-de50-4f97-9374-d87e4aca5860",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        -160
+      ],
+      "id": "fb726450-08f3-426d-a25a-1543c073975d",
+      "name": "Extract from File",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        208
+      ],
+      "id": "ac95d3d9-351f-40e9-b947-90cef9a12ece",
+      "name": "Extract from File1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ JSON.stringify({\n  document_id: $json.document_id,\n  filename: $('Download file').item.json.name,\n  file_type: $('Download file').item.json.fileExtension,\n  processed_at: $json.processed_at,\n  classification: $('Code in JavaScript').item.json.classification,\n  department: $json.department,\n  sentiment: $('Code in JavaScript').item.json.sentiment,\n  confidence_score: $('Code in JavaScript').item.json.confidence_score,\n  adjusted_confidence_score: $json.adjusted_confidence_score,\n  summary: $('Code in JavaScript').item.json.summary,\n  routing_tag: $json.routing_tag,\n  sensitivity: $json.sensitivity,\n  action_items: $('Code in JavaScript').item.json.action_items,\n  entities: $('Code in JavaScript').item.json.entities\n}, null, 2) }}",
+        "name": "={{ ($('Download file').item.json.name || 'document').replace(/\\.[^/.]+$/, '') + '-' + $json.document_id + '.json' }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1PIlS3XjMIO-K1DII0KExwxiNiadj5ETQ",
+          "mode": "list",
+          "cachedResultName": "output_docs",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1PIlS3XjMIO-K1DII0KExwxiNiadj5ETQ"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1872,
+        368
+      ],
+      "id": "8cab00ff-5937-473e-ad3f-6d3260a30c44",
+      "name": "Create processed JSON",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "wvWEiPA7SWfiLQec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "Irad.danieli@gmail.com",
+        "subject": "=={{ '[FAILED] DOCX extraction failed: ' + $('Download file').item.json.name }}",
+        "message": "==<h2>Document Processing Failed</h2>\n<p><b>Stage:</b> DOCX text extraction API</p>\n<p><b>File:</b> {{ $('Download file').item.json.name }}</p>\n<p><b>File type:</b> {{ $('Download file').item.json.fileExtension }}</p>\n\n<h3>Error</h3>\n<p>{{ $json.error?.message || $json.message || 'Unknown extraction error' }}</p>\n\n<hr>\n<p><i>Sent automatically by n8n fallback handling</i></p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        576
+      ],
+      "id": "613abd5f-28fa-4a60-a120-db3222c0e6ee",
+      "name": "Notify extract failure",
+      "webhookId": "b26ab74e-6f69-498e-8164-6966c802f8e2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RTxCILzPDOSP9GRj",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "Irad.danieli@gmail.com",
+        "subject": "=={{ '[FAILED] Gemini analysis failed: ' + $('Download file').item.json.name }}",
+        "message": "==<h2>Document Processing Failed</h2>\n<p><b>Stage:</b> Gemini / LLM analysis</p>\n<p><b>File:</b> {{ $('Download file').item.json.name }}</p>\n\n<h3>Error</h3>\n<p>{{ $json.error?.message || $json.message || 'Unknown LLM error' }}</p>\n\n<hr>\n<p><i>Sent automatically by n8n fallback handling</i></p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1056,
+        592
+      ],
+      "id": "cd15d8f9-d9d8-4584-a247-20e44289c7b7",
+      "name": "Notify LLM failure",
+      "webhookId": "23f053ce-d97f-486d-b10a-e3cbeae558b7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RTxCILzPDOSP9GRj",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "Irad.danieli@gmail.com",
+        "subject": "=={{ '[FAILED] Metadata enrichment failed: ' + $('Download file').item.json.name }}",
+        "message": "==<h2>Document Processing Failed</h2>\n<p><b>Stage:</b> FastAPI metadata enrichment</p>\n<p><b>File:</b> {{ $('Download file').item.json.name }}</p>\n<p><b>Classification:</b> {{ $('Code in JavaScript').item.json.classification || 'N/A' }}</p>\n\n<h3>Error</h3>\n<p>{{ $json.error?.message || $json.message || 'Unknown enrichment error' }}</p>\n\n<hr>\n<p><i>Sent automatically by n8n fallback handling</i></p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1552,
+        592
+      ],
+      "id": "9c5cc83c-5dce-4067-b1ef-c3ef7030081d",
+      "name": "Notify enrich failure",
+      "webhookId": "f96a4fe9-29c2-4149-8791-84347014f670",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RTxCILzPDOSP9GRj",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ [\n'# Document Summary Report',\n'',\n'## File',\n'- Name: ' + $('Download file').item.json.name,\n'- Type: ' + $('Download file').item.json.fileExtension,\n'- Document ID: ' + $json.document_id,\n'- Processed at: ' + $json.processed_at,\n'',\n'## Classification',\n'- Classification: ' + $('Code in JavaScript').item.json.classification,\n'- Department: ' + $json.department,\n'- Sentiment: ' + $('Code in JavaScript').item.json.sentiment,\n'- Sensitivity: ' + $json.sensitivity,\n'- Routing tag: ' + $json.routing_tag,\n'- Adjusted confidence: ' + $json.adjusted_confidence_score,\n'',\n'## Summary',\n$('Code in JavaScript').item.json.summary || '',\n'',\n'## Action Items',\nArray.isArray($('Code in JavaScript').item.json.action_items) && $('Code in JavaScript').item.json.action_items.length\n  ? $('Code in JavaScript').item.json.action_items.map(item => '- ' + item).join('\\n')\n  : '- None',\n'',\n'## Entities',\n'- People: ' + (($('Code in JavaScript').item.json.entities?.people || []).join(', ') || 'None'),\n'- Organizations: ' + (($('Code in JavaScript').item.json.entities?.organizations || []).join(', ') || 'None'),\n'- Dates: ' + (($('Code in JavaScript').item.json.entities?.dates || []).join(', ') || 'None'),\n'- Amounts: ' + (($('Code in JavaScript').item.json.entities?.amounts || []).join(', ') || 'None')\n].join('\\n') }}",
+        "name": "={{ ($('Download file').item.json.name || 'document').replace(/\\.[^/.]+$/, '') + '-' + $json.document_id.slice(0, 8) + '-summary.md' }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1PIlS3XjMIO-K1DII0KExwxiNiadj5ETQ",
+          "mode": "list",
+          "cachedResultName": "output_docs",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1PIlS3XjMIO-K1DII0KExwxiNiadj5ETQ"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1872,
+        208
+      ],
+      "id": "ee02e136-b32d-4348-82a0-57f562b435ba",
+      "name": "Create summary report",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "wvWEiPA7SWfiLQec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a document intelligence assistant. Your task is to analyze the provided document text and extract key information.  You must respond ONLY with a raw, valid JSON object. Do not include any conversational text, explanations, or Markdown formatting (do not use ```json or backticks).  The JSON object must use this exact structure and field types: {   \"summary\": \"Write a concise 2-3 sentence summary of the document.\",   \"classification\": \"Must be exactly one of: [invoice, report, contract, ticket, article, other]\",   \"sentiment\": \"Must be exactly one of: [positive, neutral, negative]\",   \"entities\": {     \"people\": [\"list of person names mentioned\", \"leave empty if none\"],     \"organizations\": [\"list of company or organization names\", \"leave empty if none\"],     \"dates\": [\"list of dates mentioned\", \"leave empty if none\"],     \"amounts\": [\"list of monetary amounts\", \"leave empty if none\"]   },   \"action_items\": [\"list of recommended actions or next steps\", \"leave empty if none\"],   \"confidence_score\": 0.95 }  Ensure the \"confidence_score\" is a number between 0.0 and 1.0 representing your certainty in the extraction."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        816,
+        -64
+      ],
+      "id": "b128f1f0-4133-4e4c-a398-ac1cb207b98c",
+      "name": "Basic LLM Chain",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        816,
+        112
+      ],
+      "id": "fb6eec62-623c-419f-b902-13e2ab6dc9ea",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "PXkpnTWMhbujVt3c",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "**Document Intake**",
+        "height": 800,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "e7d976df-6740-486e-97be-94935b938518",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "**Text Extraction**",
+        "height": 800,
+        "width": 416,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "6081314a-c747-4d58-a1ea-7be94042b78c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "**Metadata Enrichment**",
+        "height": 800,
+        "width": 320,
+        "color": "#EA1FBE"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1392,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "f5a0b9d5-fe9a-47a3-aedd-8d212eaf77ea",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "**Gemini Analysis and Output Parsing**",
+        "height": 800,
+        "width": 624,
+        "color": "#53F448"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        768,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "0e28b28e-430e-496c-b7f2-d5742d414194",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "**Success Outputs**",
+        "height": 800,
+        "width": 384,
+        "color": "#20D2DF"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1712,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "58fbfdca-9080-4ab3-95f4-d8883881e9da",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "Failure Notifications",
+        "height": 208,
+        "width": 2208,
+        "color": "#F20D0D"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "efc7183f-0648-44a1-aa0f-5e444896a5db",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create processed JSON",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create summary report",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify enrich failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify extract failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create processed JSON": {
+      "main": [
+        []
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify LLM failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "92b8f3ba-4946-4266-809a-cc3eb8791acb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5d5f6066c65cfe53b2d4457e60b4c84ae94b7465bd11f4caeeda809a8636ddf3"
+  },
+  "nodeGroups": [],
+  "id": "hom7yhuQrTphaqLr",
+  "tags": []
+}

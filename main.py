@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 import io
-import fitz  # PyMuPDF
 import docx  # python-docx
 from typing import Any, Dict, List, Literal, Tuple
 from uuid import uuid4
@@ -253,37 +252,22 @@ def enrich(data: GeminiResult) -> EnrichResponse:
 
 @app.post("/extract")
 async def extract_text(file: UploadFile = File(...)):
-    # Safely get the file extension
-    filename = file.filename or "unknown.txt"
+    filename = file.filename or "unknown.docx"
     ext = filename.split(".")[-1].lower()
-    
-    # Read the file bytes into memory
+
+    if ext != "docx":
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported file type for API extraction. Send only DOCX files; extract TXT/PDF in n8n.",
+        )
+
     content = await file.read()
-    extracted_text = ""
 
     try:
-        if ext == "pdf":
-            # Extract PDF text using PyMuPDF
-            doc = fitz.Document(stream=content, filetype="pdf")
-            for page in doc:
-                extracted_text += page.get_text() + "\n"
-            doc.close()
-            
-        elif ext == "docx":
-            # Extract DOCX text using python-docx
-            doc = docx.Document(io.BytesIO(content))
-            for para in doc.paragraphs:
-                extracted_text += para.text + "\n"
-                
-        elif ext in ["txt", "csv", "md"]:
-            # Standard text decoding
-            extracted_text = content.decode("utf-8")
-            
-        else:
-            raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
-            
+        document = docx.Document(io.BytesIO(content))
+        extracted_text = "\n".join(para.text for para in document.paragraphs)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error parsing file: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error parsing DOCX file: {str(e)}")
 
     return {
         "filename": filename,

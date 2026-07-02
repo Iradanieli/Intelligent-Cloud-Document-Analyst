@@ -5,11 +5,13 @@ An automated, AI-driven document processing pipeline built with n8n, Python (Fas
 ## 🚀 Features
 
 * **Automated Cloud Ingestion:** Watches a designated Google Drive folder and triggers instantly when a new file is uploaded.
-* **Multi-Format Extraction:** A Python FastAPI microservice handles raw binary text extraction from PDFs, DOCX, and TXT files.
-* **AI Entity Extraction:** Leverages a Google Gemini 3.5 Flash AI Agent to classify documents, determine sentiment, and extract structured JSON data (people, organizations, dates, amounts, and action items).
+* **Hybrid Text Extraction:** n8n handles TXT/PDF extraction, while the Python FastAPI microservice handles DOCX extraction.
+* **AI Entity Extraction:** Leverages a Google Gemini 3.5 Flash Basic LLM Chain to classify documents, determine sentiment, and extract structured JSON data (people, organizations, dates, amounts, and action items).
 * **Intelligent Business Logic:** Custom Python routing engine dynamically calculates confidence scores, identifies sensitive information (e.g., NDAs, financial data), and assigns departmental routing tags.
 * **Real-Time Notifications:** Sends formatted HTML email alerts via Gmail for every processed document.
 * **Centralized Data Logging:** Appends all processed document metadata to a centralized Google Sheet for auditing.
+* **Output Reports:** Writes processed JSON records and Markdown summary reports to the `output_docs` Google Drive folder.
+* **Failure Handling:** Sends fallback email notifications if DOCX extraction, Gemini analysis, or metadata enrichment fails after retries.
 * **Daily Digest:** An automated cron job generates and emails a 24-hour summary report of all pipeline activity.
 
 ## 🏗️ Architecture & Workflow
@@ -19,11 +21,14 @@ The system is divided into two distinct n8n workflows and one Python microservic
 ### 1. Main Ingestion Pipeline
 1. **Trigger:** A Google Drive node listens for the `fileCreated` event in the `incoming_docs` folder.
 2. **Download:** The file's binary data is downloaded via the Google Drive API.
-3. **Extraction:** An HTTP POST request sends the binary data to the Python microservice at `http://host.docker.internal:8000/extract`.
-4. **LLM Processing:** The extracted text is passed to an AI Agent connected to the Google Gemini Chat Model.
-5. **Enrichment:** A second HTTP POST request sends the parsed JSON to `http://host.docker.internal:8000/enrich` to apply business routing logic.
-6. **Storage:** The enriched data is appended as a new row in a Google Sheet.
-7. **Alert:** A Gmail node sends an immediate alert with the document summary and routing instructions.
+3. **Routing:** A Switch node routes files by extension: `txt`, `docx`, or `pdf`.
+4. **Extraction:** TXT and PDF files are extracted with n8n Extract from File nodes. DOCX files are sent to the Python microservice at `http://host.docker.internal:8000/extract`.
+5. **LLM Processing:** The extracted text is passed to a Basic LLM Chain connected to the Google Gemini Chat Model.
+6. **Parsing:** A JavaScript Code node parses the Gemini response into structured JSON.
+7. **Enrichment:** An HTTP POST request sends the parsed JSON to `http://host.docker.internal:8000/enrich` to apply business routing logic.
+8. **Parallel Outputs:** The enriched result is sent in parallel to Google Sheets, Gmail, and Google Drive output nodes.
+9. **Output Folder:** The workflow writes both a processed JSON file and a Markdown summary report to the `output_docs` Google Drive folder.
+10. **Fallback Alerts:** Error branches send Gmail notifications for DOCX extraction, LLM, and enrichment failures.
 
 ### 2. Daily Summary Report
 1. **Trigger:** A Schedule Trigger runs daily at 14:00.
@@ -35,9 +40,9 @@ The system is divided into two distinct n8n workflows and one Python microservic
 
 * **Workflow Engine:** n8n (Dockerized)
 * **Backend:** Python 3, FastAPI / Uvicorn
-* **LLM:** Google Gemini 3.5 Flash via Langchain
+* **LLM:** Google Gemini 3.5 Flash via n8n's Basic LLM Chain
 * **APIs:** Google Drive API, Google Sheets API, Gmail API
-* **Key Python Libraries:** `PyMuPDF` (fitz), `python-docx`, `uvicorn`
+* **Key Python Libraries:** `fastapi`, `uvicorn`, `python-multipart`, `python-docx`
 
 ## ⚙️ Setup & Installation
 
@@ -53,7 +58,7 @@ source venv/bin/activate
 # venv\Scripts\activate
 
 # Install dependencies
-pip install fastapi uvicorn PyMuPDF python-docx
+pip install fastapi uvicorn python-multipart python-docx
 
 # Run the backend server locally 
 # (Accessible to Docker via host.docker.internal)
